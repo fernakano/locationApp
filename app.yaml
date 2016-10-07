@@ -1,0 +1,11 @@
+%YAML 1.2
+---
+port: 1234
+settings:
+    cookie_secret: your_cookie_secret
+    static_path: __path__/static
+    template_path: __path__/templates
+    login_url: /
+extra_settings: # overrides default settings when called (merging)
+    dev:
+        debug: True

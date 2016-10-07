@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<body onload="getLocation()">
+
+<p>Wait for the coordinates.</p>
+
+<!--<button onclick="getLocation()">Try It</button>-->
+
+<p id="demo"></p>
+
+<script>
+
+    var a = document.getElementById("demo")
+
+    function getSearchParameters() {
+        var prmstr = window.location.search.substr(1);
+        return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+    }
+
+    function transformToAssocArray(prmstr) {
+        var params = {};
+        var prmarr = prmstr.split("&");
+        for (var i = 0; i < prmarr.length; i++) {
+            var tmparr = prmarr[i].split("=");
+            params[tmparr[0]] = tmparr[1];
+        }
+        return params;
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        a.innerHTML = 'Latitude: ' + position.coords.latitude +
+                '<br>Longitude: ' + position.coords.longitude;
+
+        var xmlhttp = new XMLHttpRequest();
+        var params = getSearchParameters();
+        var user = 'nouser'
+        if (params.user) {
+            user = params.user
+        }
+        var url = "/api/" + user + "/" + position.coords.latitude + "/" + position.coords.longitude;
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var myArr = JSON.parse(xmlhttp.responseText);
+                if (myArr.status) {
+                    a.innerHTML = a.innerHTML + '<br> Request is: ' + myArr.status
+                }
+            }
+        };
+
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+
+    }
+
+
+    setTimeout("location.reload(true);", 30000);
+
+</script>
+
+</body>
+</html>
